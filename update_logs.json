@@ -1,0 +1,17 @@
+[
+    {
+        "client_id": "device_123",
+        "file_path": "./received_models\\device_123_model.tflite",
+        "timestamp": "2024-12-07T10:17:22.252455"
+    },
+    {
+        "client_id": "device_123",
+        "file_path": "./received_models\\device_123_model.tflite",
+        "timestamp": "2024-12-07T10:23:11.456185"
+    },
+    {
+        "client_id": "device_123",
+        "file_path": "./received_models\\device_123_model.tflite",
+        "timestamp": "2024-12-07T10:28:53.549140"
+    }
+]
