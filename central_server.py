@@ -9,6 +9,10 @@ import datetime
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+@app.route('/')
+def home():
+    return 'Hello, World!'
+
 # Directories and file paths
 RECEIVED_MODELS_DIR = "./received_models"
 GLOBAL_MODEL_PATH = "./global_model.tflite"
@@ -39,16 +43,15 @@ def initialize_global_model():
 if not os.path.exists(GLOBAL_MODEL_PATH):
     initialize_global_model()
 
+
 # Function to load TFLite model weights
 def load_tflite_weights(tflite_model_path):
     try:
         interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
         interpreter.allocate_tensors()
 
-        # Get tensor details
         tensor_details = interpreter.get_tensor_details()
 
-        # Safely access tensor data
         weights = []
         for tensor in tensor_details:
             try:
@@ -63,10 +66,12 @@ def load_tflite_weights(tflite_model_path):
         print(f"Failed to load TFLite model {tflite_model_path}: {str(e)}")
         return None
 
+
 # Federated Averaging
 def federated_averaging(weight_sets):
     """Performs federated averaging of weights."""
     return [np.mean(np.stack(weights), axis=0) for weights in zip(*weight_sets)]
+
 
 # Logging function
 def log_update(update_info):
@@ -76,6 +81,13 @@ def log_update(update_info):
     logs.append(update_info)
     with open(LOG_FILE, "w") as f:
         json.dump(logs, f, indent=4)
+
+
+# Test connection endpoint
+@app.route('/test_connection', methods=['GET'])
+def test_connection():
+    return jsonify({"status": "success", "message": "Connected to Flask server!"}), 200
+
 
 # Endpoint: Upload local model updates
 @app.route('/upload', methods=['POST'])
@@ -87,12 +99,10 @@ def upload_model():
     file = request.files['file']
     client_id = request.form['client_id']
 
-    # Save the file securely
     filename = f"{client_id}_model.tflite"
     file_path = os.path.join(RECEIVED_MODELS_DIR, filename)
     file.save(file_path)
 
-    # Log the update
     log_update({
         "client_id": client_id,
         "file_path": file_path,
@@ -100,6 +110,7 @@ def upload_model():
     })
 
     return jsonify({"message": "Model update received successfully!"}), 200
+
 
 # Endpoint: Aggregate updates and update global model
 @app.route('/aggregate', methods=['POST'])
@@ -149,34 +160,31 @@ def aggregate_updates():
 # Endpoint: Download global model
 @app.route('/download', methods=['GET'])
 def download_global_model():
-    """Serves the latest global TFLite model."""
     try:
         return send_file(GLOBAL_MODEL_PATH, as_attachment=True)
     except FileNotFoundError:
-        return {"message": "Global model not found!"}, 404
+        return jsonify({"message": "Global model not found!"}), 404
+
 
 # Endpoint: Get logs
 @app.route('/logs', methods=['GET'])
 def get_logs():
-    """Returns logs of model updates and aggregations."""
     with open(LOG_FILE, "r") as f:
         logs = json.load(f)
     return jsonify(logs)
 
+
 # Endpoint: Get model metadata
 @app.route('/model_metadata', methods=['GET'])
 def model_metadata():
-    """Provides metadata about the global model."""
     if not os.path.exists(GLOBAL_MODEL_PATH):
         return jsonify({"message": "Global model not found!"}), 404
 
     model_size = os.path.getsize(GLOBAL_MODEL_PATH) / (1024 * 1024)  # Size in MB
     last_updated = os.path.getmtime(GLOBAL_MODEL_PATH)
 
-    # Convert timestamp to readable format
     last_updated_readable = datetime.datetime.fromtimestamp(last_updated).strftime('%Y-%m-%d %H:%M:%S')
 
-    # Count the number of updates received
     with open(LOG_FILE, "r") as f:
         logs = json.load(f)
     updates_received = len([log for log in logs if log.get('client_id')])
@@ -186,7 +194,9 @@ def model_metadata():
         "model_size_MB": round(model_size, 2),
         "updates_received": updates_received
     }
+
     return jsonify(metadata)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
