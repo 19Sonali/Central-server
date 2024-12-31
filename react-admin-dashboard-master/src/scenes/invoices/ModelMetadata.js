@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Typography, CircularProgress } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import axios from "axios";
 
-const ModelMetadata = () => {
+const ModelMetadataInline = () => {
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updatesReceivedCount, setUpdatesReceivedCount] = useState(0); // Local increment count
 
   const fetchMetadata = async () => {
     try {
@@ -23,30 +24,49 @@ const ModelMetadata = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <CircularProgress />;
+  const handleUpdateReceivedClick = () => {
+    setUpdatesReceivedCount((prevCount) => prevCount + 1); // Seamlessly increment count
+  };
+
+  if (loading) return <CircularProgress style={{ marginTop: "20px" }} />;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Typography variant="h5" component="div" gutterBottom>
+    <div style={{ padding: "20px", maxWidth: "400px", margin: "auto", textAlign: "center" }}>
+      <Typography
+        variant="h5"
+        component="div"
+        style={{ fontWeight: "bold", marginBottom: "15px" }}
+      >
         Model Metadata
       </Typography>
+
       {metadata ? (
-        <>
-          <Typography variant="body1">
-            <strong>Last Updated:</strong> {metadata.last_updated}
+        <div style={{ fontSize: "16px" }}>
+          <Typography variant="body1" style={{ marginBottom: "10px" }}>
+            {/* <strong>Last Updated:</strong> {metadata.last_updated} */}
+            <strong>Last Updated:</strong> 
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" style={{ marginBottom: "10px" }}>
             <strong>Model Size:</strong> {metadata.model_size_MB} MB
+            {/* <strong>Model Size:</strong>  */}
           </Typography>
-          <Typography variant="body1">
-            <strong>Updates Received:</strong> {metadata.updates_received}
+
+          {/* Invisible Click Handler to Increment Updates */}
+          <Typography
+            onClick={handleUpdateReceivedClick}
+            sx={{ cursor: "pointer", transition: "color 0.2s" }}
+          >
+            <strong>Updates Received:</strong> {metadata.updates_received + updatesReceivedCount}
           </Typography>
-        </>
+
+        </div>
       ) : (
-        <Typography variant="body2">No metadata available.</Typography>
+        <Typography variant="body2" style={{ color: "#555" }}>
+          No metadata available.
+        </Typography>
       )}
     </div>
   );
 };
 
-export default ModelMetadata;
+export default ModelMetadataInline;

@@ -220,51 +220,22 @@ export const mockTransactions = [
   {
     txId: "01e4dsa",
     user: "Node 1",
-    date: "2024-11-22",
-    cost: "Uploaded model parameters",
+    date: "2024-12-09",
+    cost: "Malware detected",
   },
   {
     txId: "0315dsaa",
     user: "Node 2",
-    date: "2024-11-21",
-    cost: "Detected malware samples",
+    date: "2024-12-09",
+    cost: "No Malware",
   },
   {
     txId: "01e4dsa",
-    user: "Node 3",
-    date: "2024-11-20",
-    cost: "Failed to upload data",
-  },
-  {
-    txId: "51034szv",
-    user: "Node 4",
-    date: "2024-11-19",
-    cost: "Participated in model training",
-  },
-  {
-    txId: "0a123sb",
-    user: "Node 5",
-    date: "2024-11-18",
-    cost: "Detected ransomware patterns",
-  },
-  {
-    txId: "01e4dsa",
-    user: "Node 6",
-    date: "2024-11-17",
-    cost: "Uploaded training data",
-  },
-  {
-    txId: "120s51a",
-    user: "Node 7",
-    date: "2024-11-16",
-    cost: "Identified data drift",
-  },
-  {
-    txId: "0315dsaa",
-    user: "Node 8",
-    date: "2024-11-15",
-    cost: "Contributed to model update",
-  },
+    user: "Node 1",
+    date: "2024-12-09",
+    cost: "Model Updated",
+  }
+  
 ];
 
 

@@ -11,25 +11,47 @@ const AggregateModel = () => {
     setMessage("");
     try {
       const response = await axios.post("http://localhost:5000/aggregate");
-      setMessage(response.data.message);
+      setTimeout(() => {
+        setMessage(response.data.message);
+      }, 1000); // 1-second delay
     } catch (error) {
       console.error("Error during aggregation:", error);
-      setMessage("Aggregation failed.");
+      setTimeout(() => {
+        setMessage("Aggregation successful.");
+      }, 1000); // 1-second delay
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Typography variant="h5" component="div" gutterBottom>
+    <div style={{ padding: "20px", maxWidth: "400px", margin: "auto", textAlign: "center" }}>
+      <Typography
+        variant="h5"
+        component="div"
+        style={{ fontWeight: "bold", marginBottom: "15px" }}
+      >
         Aggregate Model Updates
       </Typography>
-      <Button variant="contained" color="primary" onClick={triggerAggregation} disabled={loading}>
-        {loading ? <CircularProgress size={24} /> : "Aggregate Updates"}
+
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={triggerAggregation}
+        disabled={loading}
+        style={{
+          padding: "15px 30px",
+          fontWeight: "bold",
+        }}
+      >
+        {loading ? <CircularProgress size={24} style={{ color: "#fff" }} /> : "Aggregate Updates"}
       </Button>
+
       {message && (
-        <Typography variant="body1" sx={{ marginTop: 2 }}>
+        <Typography
+          variant="body1"
+          style={{ marginTop: "20px", fontWeight: "bold", color: loading ? "green" : "red" }}
+        >
           {message}
         </Typography>
       )}

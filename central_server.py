@@ -197,6 +197,37 @@ def model_metadata():
 
     return jsonify(metadata)
 
+# List of registered devices
+DEVICE_ENDPOINTS = [
+    "http://localhost:5001/update_model", 
+    "http://localhost:5002/update_model"
+]
+
+# Endpoint: Send updated global model to devices
+@app.route('/send_updates', methods=['POST'])
+def send_updates():
+    if not os.path.exists(GLOBAL_MODEL_PATH):
+        return jsonify({"message": "Global model not found!"}), 404
+
+    results = {}
+    for endpoint in DEVICE_ENDPOINTS:
+        try:
+            with open(GLOBAL_MODEL_PATH, "rb") as f:
+                files = {'file': ("global_model.tflite", f, "application/octet-stream")}
+                response = requests.post(endpoint, files=files)
+                results[endpoint] = response.json()
+        except Exception as e:
+            results[endpoint] = {"error": str(e)}
+
+    log_update({
+        "event": "send_updates",
+        "device_results": results,
+        "timestamp": datetime.datetime.now().isoformat()
+    })
+
+    return jsonify({"message": "Global model sent to devices!", "results": results}), 200
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

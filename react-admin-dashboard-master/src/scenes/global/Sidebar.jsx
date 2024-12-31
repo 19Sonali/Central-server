@@ -81,9 +81,9 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
+                {/* <Typography variant="h3" color={colors.grey[100]}>
                   FedDetect
-                </Typography>
+                </Typography> */}
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -109,7 +109,7 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  John Doe
+                 FedDetect
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
                   Admin
@@ -127,7 +127,7 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Model Performance Metrics"
+              title="Model Control Panel"
               to="/invoices"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
