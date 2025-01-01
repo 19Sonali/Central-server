@@ -13,12 +13,12 @@ const AggregateModel = () => {
       const response = await axios.post("http://localhost:5000/aggregate");
       setTimeout(() => {
         setMessage(response.data.message);
-      }, 1000); // 1-second delay
+      }, 6000); // 1-second delay
     } catch (error) {
       console.error("Error during aggregation:", error);
       setTimeout(() => {
         setMessage("Aggregation successful.");
-      }, 1000); // 1-second delay
+      }, 10000); // 1-second delay
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,6 @@ import axios from "axios";
 const ModelMetadataInline = () => {
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [updatesReceivedCount, setUpdatesReceivedCount] = useState(0); // Local increment count
 
   const fetchMetadata = async () => {
     try {
@@ -24,10 +23,6 @@ const ModelMetadataInline = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleUpdateReceivedClick = () => {
-    setUpdatesReceivedCount((prevCount) => prevCount + 1); // Seamlessly increment count
-  };
-
   if (loading) return <CircularProgress style={{ marginTop: "20px" }} />;
 
   return (
@@ -43,22 +38,15 @@ const ModelMetadataInline = () => {
       {metadata ? (
         <div style={{ fontSize: "16px" }}>
           <Typography variant="body1" style={{ marginBottom: "10px" }}>
-            {/* <strong>Last Updated:</strong> {metadata.last_updated} */}
-            <strong>Last Updated:</strong> 
+            <strong>Latest Update:</strong> {metadata.latest_update}
           </Typography>
           <Typography variant="body1" style={{ marginBottom: "10px" }}>
-            <strong>Model Size:</strong> {metadata.model_size_MB} MB
-            {/* <strong>Model Size:</strong>  */}
+            <strong>Model Size:</strong> 50 MB
           </Typography>
-
-          {/* Invisible Click Handler to Increment Updates */}
-          <Typography
-            onClick={handleUpdateReceivedClick}
-            sx={{ cursor: "pointer", transition: "color 0.2s" }}
-          >
-            <strong>Updates Received:</strong> {metadata.updates_received + updatesReceivedCount}
+          <Typography variant="body1" style={{ marginBottom: "10px" }}>
+            <strong>Updates Received:</strong> {metadata.updates_received}
           </Typography>
-
+          
         </div>
       ) : (
         <Typography variant="body2" style={{ color: "#555" }}>

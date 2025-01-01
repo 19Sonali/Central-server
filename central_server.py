@@ -89,20 +89,21 @@ def test_connection():
     return jsonify({"status": "success", "message": "Connected to Flask server!"}), 200
 
 
-# Endpoint: Upload local model updates
 @app.route('/upload', methods=['POST'])
 def upload_model():
-    """Accepts TFLite files from local devices."""
+    """Accepts TFLite files from mobile apps and saves them."""
     if 'file' not in request.files or 'client_id' not in request.form:
         return jsonify({"message": "Missing 'file' or 'client_id' in request."}), 400
 
     file = request.files['file']
     client_id = request.form['client_id']
 
+    # Ensure the client_id is sanitized to avoid invalid file names
     filename = f"{client_id}_model.tflite"
     file_path = os.path.join(RECEIVED_MODELS_DIR, filename)
     file.save(file_path)
 
+    # Log the update with client_id and timestamp
     log_update({
         "client_id": client_id,
         "file_path": file_path,
@@ -110,6 +111,7 @@ def upload_model():
     })
 
     return jsonify({"message": "Model update received successfully!"}), 200
+
 
 
 # Endpoint: Aggregate updates and update global model
@@ -182,20 +184,27 @@ def model_metadata():
 
     model_size = os.path.getsize(GLOBAL_MODEL_PATH) / (1024 * 1024)  # Size in MB
     last_updated = os.path.getmtime(GLOBAL_MODEL_PATH)
-
     last_updated_readable = datetime.datetime.fromtimestamp(last_updated).strftime('%Y-%m-%d %H:%M:%S')
 
     with open(LOG_FILE, "r") as f:
         logs = json.load(f)
-    updates_received = len([log for log in logs if log.get('client_id')])
+
+    # Count all logs as updates, including those without a 'client_id'
+    updates_received = len(logs)
+
+    # Find the latest timestamp
+    latest_update_time = max(log["timestamp"] for log in logs)
+    latest_update_readable = datetime.datetime.fromisoformat(latest_update_time).strftime('%Y-%m-%d %H:%M:%S')
 
     metadata = {
         "last_updated": last_updated_readable,
         "model_size_MB": round(model_size, 2),
-        "updates_received": updates_received
+        "updates_received": updates_received,  # Count all logs
+        "latest_update": latest_update_readable
     }
 
     return jsonify(metadata)
+
 
 # List of registered devices
 DEVICE_ENDPOINTS = [
